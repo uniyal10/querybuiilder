@@ -378,26 +378,46 @@ const selectJSON = [
 ];
 
 const RuleComponent = () => {
+  const [selectedOption, setSelectedOption] = useState(null);
   const getOperatorInput = () => {
-    return <div></div>;
+    return (
+      <div style={{ marginLeft: "5px" }}>
+        <select name="operators">
+          {selectedOption?.operators?.map((_item, index) => {
+            return <option key={index}>{_item}</option>;
+          })}
+        </select>
+      </div>
+    );
   };
 
   const getInputTypeField = () => {
-    return <div></div>;
+    return (
+      <div style={{ marginLeft: "5px" }}>
+        {selectedOption?.type === "multi_select" ? (
+          <select name="inputField">
+            {selectedOption?.options.map((_item, index) => {
+              return <option key={index}>{_item}</option>;
+            })}
+          </select>
+        ) : (
+          <input type="number" />
+        )}
+      </div>
+    );
   };
 
   const handleChange = (e) => {
     const selectType = e.target.value;
-    console.log(
-      selectJSON.find((_item) =>
-        _item?.label?.toLowerCase().includes(selectType.toLowerCase())
-      )
+    const options = selectJSON.find((_item) =>
+      _item?.label?.toLowerCase().includes(selectType.toLowerCase())
     );
+    if (options) setSelectedOption(options);
   };
 
   return (
-    <div>
-      <select onChange={handleChange} name="combinator" id="new">
+    <div style={{ display: "flex" }}>
+      <select onChange={handleChange} name="selection" id="new">
         <option>Gender</option>
         <option>Age</option>
         <option>Current Address Ownership</option>
@@ -430,11 +450,29 @@ const RuleComponent = () => {
 
 const QueryForm = () => {
   const [rules, setRules] = useState([]);
+  const [res, setRes] = useState();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    console.log(...data.entries());
+    const responseObject = {
+      rules: [],
+    };
+    const arr = Array.from(data.entries());
+    responseObject[arr[0][0]] = arr[0][1];
+    for (let i = 1; i < arr.length; i += 3) {
+      let ruleObject = {};
+      let j = i;
+      while (j < i + 3) {
+        ruleObject[arr[j][0]] = arr[j][1];
+        j++;
+      }
+
+      responseObject.rules.push(ruleObject);
+    }
+
+    console.log(responseObject);
+    setRes(responseObject);
   };
 
   const createRule = () => {
@@ -464,37 +502,59 @@ const QueryForm = () => {
           +Group
         </button>
         <button type="submit">submit</button>
-      </form>
 
-      {rules.map((rule, index) => {
-        return (
-          <div
-            key={index}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "5px",
-            }}
-          >
-            {rule}{" "}
-            <button
-              onClick={() => {
-                console.log("clicked");
-                setRules([...rules.splice(index + 1, 1)]);
+        {rules.map((rule, index) => {
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "5px",
               }}
-              style={{ marginLeft: "5px" }}
             >
-              x
-            </button>
-          </div>
-        );
-      })}
+              {rule}{" "}
+              <button
+                onClick={() => {
+                  console.log(
+                    [...rules.slice(0, index), ...rules.slice(index + 1)],
+                    index
+                  );
+
+                  setRules([
+                    ...rules.slice(0, index),
+                    ...rules.slice(index + 1),
+                  ]);
+                }}
+                style={{ marginLeft: "5px" }}
+                type="button"
+              >
+                x
+              </button>
+            </div>
+          );
+        })}
+      </form>
+      <QueryResult res={res} />
     </div>
   );
 };
 
-const QueryResult = (data: any) => {
-  return <div></div>;
+const QueryResult = (res: any) => {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        backgroundColor: "grey",
+        width: "100%",
+        height: "40%",
+        overflow: "scroll",
+      }}
+    >
+      {JSON.stringify(res)}
+    </div>
+  );
 };
 
 export default function App() {
