@@ -481,10 +481,15 @@ const QueryForm = () => {
 
   const createGroup = () => {};
 
-  console.log({ rules });
-
   return (
-    <div id="rootDiv">
+    <div
+      style={{
+        background: "rgba(0,75,183,.2)",
+        height: "100vh",
+        padding: 10,
+        borderRadius: "10px",
+      }}
+    >
       <form onSubmit={handleSubmit}>
         <select name="combinator" id="new">
           <option>AND</option>
@@ -501,7 +506,15 @@ const QueryForm = () => {
         <button type="button" style={{ marginLeft: "10px" }}>
           +Group
         </button>
-        <button type="submit">submit</button>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 30,
+            right: 30,
+          }}
+        >
+          <button type="submit">submit</button>
+        </div>
 
         {rules.map((rule, index) => {
           return (
@@ -509,7 +522,7 @@ const QueryForm = () => {
               key={index}
               style={{
                 display: "flex",
-                justifyContent: "center",
+
                 marginTop: "5px",
               }}
             >
@@ -535,12 +548,25 @@ const QueryForm = () => {
           );
         })}
       </form>
-      <QueryResult res={res} />
+      {/* <QueryResult res={res} /> */}
     </div>
   );
 };
 
 const QueryResult = (res: any) => {
+  const formattedData = JSON.stringify(res)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/("[\w\s]+":)/g, '<span class="json-key">$1</span>')
+    .replace(
+      /("(?:true|false|null|\d+\.?\d*)")/g,
+      '<span class="json-string">$1</span>'
+    )
+    .replace(/(\d+\.?\d*)/g, '<span class="json-number">$1</span>')
+    .replace(/(true|false|null)/g, '<span class="json-boolean">$1</span>')
+    .replace(/(:\s*"[^"]*")/g, ': <span class="json-string">$1</span>');
+
   return (
     <div
       style={{
@@ -552,14 +578,14 @@ const QueryResult = (res: any) => {
         overflow: "scroll",
       }}
     >
-      {JSON.stringify(res)}
+      <div dangerouslySetInnerHTML={{ __html: formattedData }} />
     </div>
   );
 };
 
 export default function App() {
   return (
-    <div className="App">
+    <div>
       <QueryForm />
     </div>
   );
