@@ -1,7 +1,7 @@
 import "./styles.css";
 import { useState } from "react";
 
-const selectJSON = [
+export const selectJSON = [
   {
     key: "applicant.gender",
     label: "Gender",
@@ -486,69 +486,68 @@ const QueryForm = () => {
       style={{
         background: "rgba(0,75,183,.2)",
         height: "100vh",
+        border: "2px",
         padding: 10,
+        borderColor: "black",
         borderRadius: "10px",
+        display: "flex",
       }}
     >
-      <form onSubmit={handleSubmit}>
-        <select name="combinator" id="new">
-          <option>AND</option>
-          <option>OR</option>
-        </select>
+      <div style={{ width: "60%", position: "relative" }}>
+        <form onSubmit={handleSubmit}>
+          <select name="combinator" id="new">
+            <option>AND</option>
+            <option>OR</option>
+          </select>
 
-        <button
-          onClick={createRule}
-          type="button"
-          style={{ marginLeft: "10px" }}
-        >
-          +Rule
-        </button>
-        <button type="button" style={{ marginLeft: "10px" }}>
-          +Group
-        </button>
-        <div
-          style={{
-            position: "absolute",
-            bottom: 30,
-            right: 30,
-          }}
-        >
-          <button type="submit">submit</button>
-        </div>
+          <button
+            onClick={createRule}
+            type="button"
+            style={{ marginLeft: "10px" }}
+          >
+            +Rule
+          </button>
+          <button type="button" style={{ marginLeft: "10px" }}>
+            +Group
+          </button>
+          <div style={{ position: "absolute", bottom: 20, right: 20 }}>
+            <button type="submit">submit</button>
+          </div>
 
-        {rules.map((rule, index) => {
-          return (
-            <div
-              key={index}
-              style={{
-                display: "flex",
+          {rules.map((rule, index) => {
+            return (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
 
-                marginTop: "5px",
-              }}
-            >
-              {rule}{" "}
-              <button
-                onClick={() => {
-                  console.log(
-                    [...rules.slice(0, index), ...rules.slice(index + 1)],
-                    index
-                  );
-
-                  setRules([
-                    ...rules.slice(0, index),
-                    ...rules.slice(index + 1),
-                  ]);
+                  marginTop: "5px",
                 }}
-                style={{ marginLeft: "5px" }}
-                type="button"
               >
-                x
-              </button>
-            </div>
-          );
-        })}
-      </form>
-      {/* <QueryResult res={res} /> */}
+                {rule}{" "}
+                <button
+                  onClick={() => {
+                    console.log(
+                      [...rules.slice(0, index), ...rules.slice(index + 1)],
+                      index
+                    );
+
+                    setRules([
+                      ...rules.slice(0, index),
+                      ...rules.slice(index + 1),
+                    ]);
+                  }}
+                  style={{ marginLeft: "5px" }}
+                  type="button"
+                >
+                  x
+                </button>
+              </div>
+            );
+          })}
+        </form>
+      </div>
+      <QueryResult res={res} />
     </div>
   );
 };
@@ -570,11 +569,8 @@ const QueryResult = (res: any) => {
   return (
     <div
       style={{
-        position: "absolute",
-        bottom: 0,
         backgroundColor: "grey",
-        width: "100%",
-        height: "40%",
+        width: "40%",
         overflow: "scroll",
       }}
     >
